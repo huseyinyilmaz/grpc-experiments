@@ -1,0 +1,18 @@
+syntax = "proto3";
+package python_to_python_simple;
+
+// Simple service
+service Simple_python_python {
+  // increase given number by one.
+  rpc increase (IncreaseRequest) returns (IncreaseReply) {}
+}
+
+// The request number to be increased
+message IncreaseRequest {
+  int32 num = 1;
+}
+
+// The response message containing increased number.
+message IncreaseReply {
+  int32 num = 1;
+}
