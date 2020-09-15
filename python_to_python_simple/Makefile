@@ -6,3 +6,7 @@ server:
 
 client:
 	python client.py
+
+
+requirements:
+	pip-compile --generate-hashes requirements.in
