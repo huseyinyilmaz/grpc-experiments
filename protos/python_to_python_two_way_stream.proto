@@ -1,0 +1,18 @@
+syntax = "proto3";
+package python_to_python_two_way_stream;
+
+// Simple service
+service Two_way_stream_python_to_python {
+  // increase given number by one.
+  rpc increase (stream IncreaseRequest) returns (stream IncreaseReply) {}
+}
+
+// The request number to be increased
+message IncreaseRequest {
+  int32 num = 1;
+}
+
+// The response message containing increased number.
+message IncreaseReply {
+  int32 num = 1;
+}
