@@ -64,3 +64,35 @@ python client.py
 ```
 
 2.2 seconds! Not waiting for previous response shaved us 1.1 seconds. Nice!
+
+Upon thinking more about this, I realized that 2 way stream does not really work with what I am testing. In my test, a request should be sent after checking previous response. But here, we are sending it after all requests before getting the response.
+
+GRPC python to rust simple
+------------------------------
+
+Another idea I want to try is to implement grpc server with another language so I can speed up things by implementing cpu bound microservices with other languages. So I implemented server with rust and client with python. Lets see if that is going to do any performance gain:
+
+```
+(venv) huseyin@admins-MBP python_to_rust_simple % make client
+python client.py
+10000 requests is completed in 0:00:01.617463
+(venv) huseyin@admins-MBP python_to_rust_simple %
+```
+
+1.6 seconds. That is even better then my faulty two way stream implementation.
+
+
+Take aways
+------------
+
+I really enjoyed how api interface is specified with protocol buffers. I am sure there will be a documentation generator for this if there is not already. GRPC is really different than rest in the way server integrates to rest of the system. There is usually a classic system to deploy http servers. For instance in python all frameworks implement wsgi interface and you can serve all of them with something like uwsgi. Because grpc does a lot of network tricks. It requires for you to start a grpc server and not a wsgi server. I suspect that will make grpc integration to web frameworks harder. I really enjoyed speed and cross language interoperability. I think in general GRPC is ready for production usage.
+
+Another thing I noticed is how bad default grpc implementations are. Go checkout node examples and you will see that they use callbacks and not Promises, Iterators or Generators. Whats up with that? I used this framework for rust implementation and it was pretty solid https://github.com/hyperium/tonic . I am hoping to get a similar framework for python as well. Python grpc implementation was not really bad actually but there were a lot of skaffolding that made my (really tiny) implementation more complicated than it should be.
+
+Naming standards on the examples repo was pretty bad. They use Camel case class like naming convention for methods. Which creates a really bad python style. I just went with python like style.
+
+What I am not sure about is how to deal with api version updates. I am not sure how backward incompatible and backward compatible updates would get deployed here without any service distrubtion. Specially we would probably want to keep running 2 versions side by side at the same time for users to switch to a new version. I need to try that at some point as well.
+
+Debugging servers also seems to be problematic. There is not really any complete grpc client at the moment. Best one seems to be BloomRPC and it does not support reflections. (Reflections are how server provides client with api spec, so you would not have to provide the proto file yourself.)
+
+I am also not sure about production infrastructure that needs to be done. I am not how old proxies would perform with grpc traffic. I would guess that best way to serve a grpc system would be using kubernetes service mashes but I am not sure.
